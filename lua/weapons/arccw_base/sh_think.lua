@@ -84,7 +84,9 @@ function SWEP:Think()
 
     if self:GetCurrentFiremode().RunawayBurst and self:Clip1() > 0 then
         if self:GetBurstCount() > 0 then
-            self:PrimaryAttack()
+            if (SERVER and game.SinglePlayer()) then
+                self:PrimaryAttack()
+            end
         end
 
         if self:GetBurstCount() == self:GetBurstLength() then
@@ -395,8 +397,8 @@ function SWEP:DoTriggerDelay()
         if anim then
             self:PlayAnimation(anim, self:GetBuff_Mult("Mult_TriggerDelayTime"), true, 0)
             --self:SetNextPrimaryFire(CurTime() + self:GetAnimKeyTime(anim))
-        else
-            self:PlayIdleAnimation(true)
+        --else
+        --    self:PlayIdleAnimation(true)
         end
         self.LastTriggerTime = 0
         self.LastTriggerDuration = 0
