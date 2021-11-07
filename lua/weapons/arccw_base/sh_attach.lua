@@ -8,6 +8,7 @@ ArcCW.ConVar_BuffMults = {
     ["Mult_HipDispersion"] = "arccw_mult_hipfire",
     ["Mult_ReloadTime"] = "arccw_mult_reloadtime",
     ["Mult_SightTime"] = "arccw_mult_sighttime",
+    ["Mult_RPM"] = "arccw_mult_rpm",
     ["Mult_Range"] = "arccw_mult_range",
     ["Mult_Recoil"] = "arccw_mult_recoil",
     ["Mult_MoveDispersion"] = "arccw_mult_movedisp",
@@ -528,6 +529,12 @@ function SWEP:GetActiveElements(recache)
             table.Add(eles, atttbl.ActivateElements)
         end
 
+        local num = i.ToggleNum or 1
+        if atttbl.ToggleStats and atttbl.ToggleStats[num] and (atttbl.ToggleStats[num]["ActivateElements"] != nil) then
+            table.Add(eles, atttbl.ToggleStats[num]["ActivateElements"])
+            --atttbl.ToggleStats[num][buff]
+        end
+
         local slots = atttbl.Slot
 
         if isstring(slots) then
@@ -791,7 +798,7 @@ function SWEP:RefreshBGs()
     end
 
     if vm and vm:IsValid() then
-        vm:SetBodyGroups(self.DefaultBodygroups)
+        ArcCW.SetBodyGroups(vm, self.DefaultBodygroups)
         vm:SetMaterial(vmm)
         vm:SetColor(vmc)
         vm:SetSkin(vms)
@@ -808,11 +815,8 @@ function SWEP:RefreshBGs()
     self:SetSkin(wms)
 
     if self.WMModel and self.WMModel:IsValid() then
-        if self.MirrorVMWM then
-            self.WMModel:SetBodyGroups(self.DefaultBodygroups)
-        else
-            self.WMModel:SetBodyGroups(self.DefaultWMBodygroups)
-        end
+        ArcCW.SetBodyGroups(self.WMModel, self.MirrorVMWM and self.DefaultBodygroups or self.DefaultWMBodygroups)
+
         self.WMModel:SetMaterial(wmm)
         self.WMModel:SetColor(wmc)
         self.WMModel:SetSkin(wms)
@@ -1285,8 +1289,8 @@ function SWEP:ToggleSlot(slot, num, silent, back)
 
     self:RefreshBGs()
 
-    if !silent and self:GetBuff_Stat("ToggleSound", slot) != false then
-        surface.PlaySound(self:GetBuff_Stat("ToggleSound", slot) or "weapons/arccw/firemode.wav")
+    if CLIENT and !silent and self:GetBuff_Stat("ToggleSound", slot) != false then
+        surface.PlaySound(self:GetBuff_Stat("ToggleSound", slot) or (atttbl.ToggleStats[slot] or {}).ToggleSound or "weapons/arccw/firemode.wav")
     end
 end
 
@@ -1296,7 +1300,7 @@ function SWEP:AdjustAtts()
     if SERVER then
         local cs = self:GetCapacity() + self:GetChamberSize()
 
-        if self:Clip1() > cs then
+        if self:Clip1() > cs and self:Clip1() != ArcCW.BottomlessMagicNumber then
             local diff = self:Clip1() - cs
             self:SetClip1(cs)
 

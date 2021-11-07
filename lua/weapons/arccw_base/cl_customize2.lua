@@ -132,6 +132,9 @@ local pickx_full = Material("arccw/hud/pickx_filled.png", "mips smooth")
 
 local bird = Material("arccw/hud/arccw_bird.png", "mips smooth")
 
+local iconlock = Material("arccw/hud/locked_32.png", "mips smooth")
+local iconunlock = Material("arccw/hud/unlocked_32.png", "mips smooth")
+
 -- 1: Customize
 -- 2: Presets
 -- 3: Inventory
@@ -162,9 +165,12 @@ function SWEP:CreateCustomize2HUD()
     local col_block = Color(50, 0, 0, 175)
     local col_block_txt = Color(175, 10, 10, 255)
 
+    local col_unowned = col_block
+    local col_unowned_txt = col_block_txt
+
     if GetConVar("arccw_attinv_darkunowned"):GetBool() then
-        col_block = Color(0, 0, 0, 100)
-        col_block_txt = Color(10, 10, 10, 255)
+        col_unowned = Color(0, 0, 0, 150)
+        col_unowned_txt = Color(150, 150, 150, 255)
     end
 
     local col_bad = Color(255, 50, 50, 255)
@@ -236,7 +242,7 @@ function SWEP:CreateCustomize2HUD()
             return
         end
 
-        if self:GetReloading() then
+        if self:GetReloading() and !GetConVar("arccw_reloadincust"):GetBool() then
             ArcCW.InvHUD:Remove()
             return
         end
@@ -256,12 +262,15 @@ function SWEP:CreateCustomize2HUD()
         col_shadow = Color(0, 0, 0, Lerp(ArcCW.Inv_Fade, 0, 255))
         col_button = Color(0, 0, 0, Lerp(ArcCW.Inv_Fade, 0, 175))
 
+        col_block = Color(50, 0, 0, 175 * ArcCW.Inv_Fade)
+        col_block_txt = Color(175, 10, 10, Lerp(ArcCW.Inv_Fade, 0, 255))
+
         if GetConVar("arccw_attinv_darkunowned"):GetBool() then
-            col_block = Color(0, 0, 0, Lerp(ArcCW.Inv_Fade, 0, 100))
-            col_block_txt = Color(10, 10, 10, Lerp(ArcCW.Inv_Fade, 0, 255))
+            col_unowned = Color(0, 0, 0, Lerp(ArcCW.Inv_Fade, 0, 150))
+            col_unowned_txt = Color(150, 150, 150, Lerp(ArcCW.Inv_Fade, 0, 255))
         else
-            col_block = Color(50, 0, 0, 175 * ArcCW.Inv_Fade)
-            col_block_txt = Color(175, 10, 10, Lerp(ArcCW.Inv_Fade, 0, 255))
+            col_unowned = col_block
+            col_unowned_txt = col_block_txt
         end
 
         --col_bad = Color(255, 50, 50, 255 * ArcCW.Inv_Fade)
@@ -866,7 +875,7 @@ function SWEP:CreateCustomize2HUD()
                 local col = col_button
                 local col2 = col_fg
 
-                local atttbl = ArcCW.AttachmentTable[self2.att or ""]
+                local atttbl = ArcCW.AttachmentTable[self2.att or ""] or {}
 
                 local _, _, blocked, showqty = self:ValidateAttachment(att.att, nil, att.slot)
 
@@ -889,9 +898,12 @@ function SWEP:CreateCustomize2HUD()
 
                 local owned = ArcCW:PlayerGetAtts(self:GetOwner(), att.att) > 0
 
-                if blocked or (!owned and installed != self2.att) then
+                if blocked then
                     col = col_block
                     col2 = col_block_txt
+                elseif !owned and installed != self2.att then
+                    col = col_unowned
+                    col2 = col_unowned_txt
                 end
 
                 if !owned and installed != self2.att then
@@ -1288,7 +1300,7 @@ function SWEP:CreateCustomize2HUD()
         if equipped and atttbl.ToggleStats then
             local toggle = vgui.Create("DButton", ArcCW.InvHUD_Menu3)
 
-            toggle:SetSize(m_w * 1 / 3, rss * 10)
+            toggle:SetSize(m_w * 1 / 3 - rss * 2, rss * 10)
             toggle:SetPos(leftbuffer + (ss * 4), rss * 16 + rss * 24 + ss * 128 - (rss * 10))
             toggle:SetText("")
             toggle.OnMousePressed = function(self2, kc)
@@ -1328,6 +1340,33 @@ function SWEP:CreateCustomize2HUD()
                 surface.SetTextColor(col2)
                 surface.SetTextPos((w - tw) / 2, (h - th) / 2)
                 surface.DrawText(txt)
+            end
+
+            local togglelock = vgui.Create("DButton", ArcCW.InvHUD_Menu3)
+            togglelock:SetSize(rss * 10, rss * 10)
+            togglelock:SetPos(leftbuffer + (ss * 4) + m_w * 1 / 3, rss * 16 + rss * 24 + ss * 128 - (rss * 10))
+            togglelock:SetText("")
+            togglelock.OnMousePressed = function(self2, kc)
+                self.Attachments[slot].ToggleLock = !self.Attachments[slot].ToggleLock
+                if self.Attachments[slot].ToggleLock then
+                    self:EmitSound("weapons/arccw/dragatt.wav", 0, 150)
+                else
+                    self:EmitSound("weapons/arccw/dragatt.wav", 0, 80)
+                end
+            end
+            togglelock.Paint = function(self2, w, h)
+                local col = col_button
+                local col2 = col_fg
+
+                if self2:IsHovered() or ArcCW.Inv_SelectedInfo == self2.Val then
+                    col = col_fg_tr
+                    col2 = col_shadow
+                end
+
+                draw.RoundedBox(cornerrad, 0, 0, w, h, col)
+                surface.SetDrawColor(col2.r, col2.g, col2.b)
+                surface.SetMaterial(self.Attachments[slot].ToggleLock and iconlock or iconunlock)
+                surface.DrawTexturedRect(4, 4, w - 8, h - 8)
             end
 
             bottombuffer = rss * 10
@@ -1891,7 +1930,7 @@ function SWEP:CreateCustomize2HUD()
             if !self.PrimaryBash and !self.Throwing then
                 table.insert(infos, {
                     title = translate("trivia.noise"),
-                    value = noise,
+                    value = math.Round(noise, 1),
                     unit = translate("unit.db"),
                 })
             end
@@ -2095,7 +2134,7 @@ function SWEP:CreateCustomize2HUD()
 
             local function RangeText(range)
                 local metres = tostring(math.Round(range)) .. "m"
-                local hu = tostring(math.Round(range / ArcCW.HUToM)) .. "HU"
+                local hu = tostring(math.Round(range / ArcCW.HUToM / 100) * 100) .. "HU"
 
                 return metres, hu
             end
@@ -2208,17 +2247,18 @@ function SWEP:CreateCustomize2HUD()
 
                 arpm = math.Round(60 / ((firedelay + self:GetAnimKeyTime("cycle", true)) * self:GetBuff_Mult("Mult_CycleTime")))
             elseif self:GetCurrentFiremode().Mode == 1 then
-                arpm = math.min(400, (60 / self:GetFiringDelay()))
+                arpm = math.min(400, 60 / self:GetFiringDelay())
             end
             aars = aars * arpm
 
-            
+            --[[
             if self:GetCurrentFiremode().Mode == 1 or self:GetIsManualAction() then
-                disclaimers = disclaimers .. " " .. arpm .. "rpm"
+                disclaimers = disclaimers .. " " .. arpm .. translate("unit.rpm")
             end
+            ]]
 
             table.insert(infos, {
-                title = "Fesiug's Recoil Score (lower is better)",
+                title = translate("trivia.recoilscore"),
                 value = math.Round(aars),
                 unit = " points" .. disclaimers,
             })
@@ -2352,8 +2392,8 @@ function SWEP:CreateCustomize2HUD()
             local s = w / 2
             local s2 = ss * 10
 
-            local range_1_txt = tostring(range_1) .. "m / " .. tostring(math.Round(range_1 / ArcCW.HUToM)) .. "HU"
-            local range_3_txt = tostring(range_3) .. "m / " .. tostring(math.Round(range_3 / ArcCW.HUToM)) .. "HU"
+            local range_1_txt = tostring(range_1) .. "m / " .. tostring(math.Round(range_1 / ArcCW.HUToM / 100) * 100) .. "HU"
+            local range_3_txt = tostring(range_3) .. "m / " .. tostring(math.Round(range_3 / ArcCW.HUToM / 100) * 100) .. "HU"
 
             local col_bullseye = Color(200, 200, 200, Lerp(ArcCW.Inv_Fade, 0, 100))
 

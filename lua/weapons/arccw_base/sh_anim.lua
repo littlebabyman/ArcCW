@@ -1,19 +1,19 @@
 SWEP.Cam_Offset_Ang = Angle(0, 0, 0)
 
 function SWEP:SelectAnimation(anim)
-    if self:GetState() == ArcCW.STATE_SIGHTS and self.Animations[anim .. "_iron"] then
+    if self:GetNWState() == ArcCW.STATE_SIGHTS and self.Animations[anim .. "_iron"] then
         anim = anim .. "_iron"
     end
 
-    if self:GetState() == ArcCW.STATE_SIGHTS and self.Animations[anim .. "_sights"] then
+    if self:GetNWState() == ArcCW.STATE_SIGHTS and self.Animations[anim .. "_sights"] then
         anim = anim .. "_sights"
     end
 
-    if self:GetState() == ArcCW.STATE_SIGHTS and self.Animations[anim .. "_sight"] then
+    if self:GetNWState() == ArcCW.STATE_SIGHTS and self.Animations[anim .. "_sight"] then
         anim = anim .. "_sight"
     end
 
-    if self:GetState() == ArcCW.STATE_SPRINT and self.Animations[anim .. "_sprint"] then
+    if self:GetNWState() == ArcCW.STATE_SPRINT and self.Animations[anim .. "_sprint"] then
         anim = anim .. "_sprint"
     end
 
@@ -196,7 +196,7 @@ function SWEP:PlayAnimation(key, mult, pred, startfrom, tt, skipholster, ignorer
         local dur = vm:SequenceDuration()
         vm:SetPlaybackRate(math.Clamp(dur / (ttime + startfrom), -4, 12))
         self.LastAnimStartTime = ct
-        self.LastAnimFinishTime = ct + (dur)
+        self.LastAnimFinishTime = ct + dur
     end
 
     local att = self:GetBuff_Override("Override_CamAttachment") or self.CamAttachment -- why is this here if we just... do cool stuff elsewhere?

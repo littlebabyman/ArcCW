@@ -32,7 +32,12 @@ ArcCW.ClientConVars = {
     ["arccw_crosshair_shotgun"]       = { def =  1 },
     ["arccw_crosshair_equip"]         = { def =  1 },
     ["arccw_crosshair_aa"]            = { def =  1 },
-    ["arccw_crosshair_trueaim"]            = { def =  0 },
+    ["arccw_crosshair_trueaim"]       = { def =  0 },
+    ["arccw_crosshair_prong_top"]     = { def =  1 },
+    ["arccw_crosshair_prong_left"]    = { def =  1 },
+    ["arccw_crosshair_prong_right"]   = { def =  1 },
+    ["arccw_crosshair_prong_bottom"]  = { def =  1 },
+    ["arccw_crosshair_tilt"]    = { def =  0 },
 
     ["arccw_attinv_simpleproscons"]   = { def =  0 },
     ["arccw_attinv_onlyinspect"]      = { def =  0 },
@@ -68,6 +73,7 @@ ArcCW.ClientConVars = {
     ["arccw_hud_3dfun_ammotype"]      = { def =  0 },
     ["arccw_hud_forceshow"]           = { def =  0 },
     ["arccw_hud_fcgbars"]             = { def =  1, desc = "Draw firemode bars on ammo HUD." },
+    ["arccw_hud_fcgabbrev"]           = { def =  0, desc = "Use shortened firemode names."},
     ["arccw_hud_minimal"]             = { def =  1, desc = "Backup HUD if we cannot draw the ammo HUD." },
     ["arccw_hud_embracetradition"]    = { def =  0, desc = "Use the classic customization HUD." },
     ["arccw_hud_deadzone_x"]          = { def =  0 },
@@ -119,7 +125,8 @@ ArcCW.ClientConVars = {
 
     ["arccw_aimassist_cl"]            = { def = 0, usri = true },
 
-    ["arccw_dev_benchgun"]            = { def = 0},
+    ["arccw_dev_benchgun"]            = { def = 0 },
+    ["arccw_dev_benchgun_custom"]     = { def = "" },
 
     ["arccw_dev_removeonclose"]       = { def = 0, desc = "Remove the hud when closing instead of fading out, allowing easy reloading of the hud." },
 }

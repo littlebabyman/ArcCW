@@ -85,16 +85,15 @@ function SWEP:GetHUDData()
         data.ammo = "-"
     end
 
+    if self:HasInfiniteAmmo() then
+        data.ammo = "∞"
+    end
     if self:HasBottomlessClip() then
         data.clip = data.ammo
         data.ammo = "-"
         if self:HasInfiniteAmmo() then
             data.clip = "∞"
         end
-    end
-
-    if self:HasInfiniteAmmo() then
-        data.ammo = self:GetCapacity()
     end
 
     if self:GetInUBGL() then
@@ -446,10 +445,14 @@ function SWEP:DrawHUD()
             apan_bg.x = math.Clamp(apan_bg.x, ScreenScaleMulti(8), ScrW() - CopeX() - ScreenScaleMulti(128 + 8))
             apan_bg.y = math.Clamp(apan_bg.y, ScreenScaleMulti(8), ScrH() - CopeY() - ScreenScaleMulti(48))
 
+            if !fmbars then
+                apan_bg.y = apan_bg.y + ScreenScaleMulti(6)
+            end
+
             if GetConVar("arccw_hud_3dfun_ammotype"):GetBool() or self:HasBottomlessClip() and !self:HasInfiniteAmmo() then
                 local wammotype = {
                     x = apan_bg.x + apan_bg.w - airgap,
-                    y = apan_bg.y - ScreenScaleMulti(8),
+                    y = apan_bg.y - ScreenScaleMulti(10),
                     text = language.GetPhrase(data.ammotype .. "_ammo"),
                     font = "ArcCW_8",
                     col = col2,
@@ -461,10 +464,6 @@ function SWEP:DrawHUD()
                     wammotype.y = apan_bg.y - ScreenScaleMulti(16 + 4)
                 end
                 MyDrawText(wammotype)
-            end
-
-            if !fmbars then
-                apan_bg.y = apan_bg.y + ScreenScaleMulti(6)
             end
 
             local wammo = {
@@ -915,6 +914,8 @@ function SWEP:DrawHUD()
 
     if clipdiff == 1 then
         vclip = self:Clip1()
+    elseif self:Clip1() == ArcCW.BottomlessMagicNumber then
+        clipdiff = 0
     end
 
     vclip = math.Approach(vclip, self:Clip1(), FrameTime() * 30 * clipdiff)

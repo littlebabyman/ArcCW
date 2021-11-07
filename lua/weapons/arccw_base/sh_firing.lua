@@ -44,7 +44,7 @@ function SWEP:CanPrimaryAttack()
     if self:BarrelHitWall() > 0 then return end
 
     -- Can't shoot while sprinting
-    if self:GetState() == ArcCW.STATE_SPRINT and !(self:GetBuff_Override("Override_ShootWhileSprint", self.ShootWhileSprint)) then return end
+    if self:GetNWState() == ArcCW.STATE_SPRINT and !(self:GetBuff_Override("Override_ShootWhileSprint", self.ShootWhileSprint)) then return end
 
     -- Maximum burst shots
     if (self:GetBurstCount() or 0) >= self:GetBurstLength() then return end
@@ -93,9 +93,8 @@ function SWEP:PrimaryAttack()
 
     if self:HasBottomlessClip() then
         clip = self:Ammo1()
-
         if self:HasInfiniteAmmo() then
-            clip = 10
+            clip = math.huge
         end
     end
 
@@ -136,7 +135,7 @@ function SWEP:PrimaryAttack()
     local spread = ArcCW.MOAToAcc * self:GetBuff("AccuracyMOA")
     local disp = self:GetDispersion() * ArcCW.MOAToAcc / 10
 
-    dir:Rotate(Angle(0, ArcCW.StrafeTilt(self), 0))
+    --dir:Rotate(Angle(0, ArcCW.StrafeTilt(self), 0))
     dir = dir + VectorRand() * disp
 
     if GetConVar("arccw_dev_shootinfo"):GetInt() >= 3 and disp > 0 then
@@ -634,14 +633,16 @@ function SWEP:GetShootSrc()
     if owner:IsNPC() then return owner:GetShootPos() end
 
     local dir    = owner:EyeAngles()
-    local offset = self:GetBuff_Override("Override_BarrelOffsetHip") or self.BarrelOffsetHip
+    local offset = Vector(0, 0, 0)
 
     if self:GetOwner():Crouching() then
         offset = self:GetBuff_Override("Override_BarrelOffsetCrouch") or self.BarrelOffsetCrouch or offset
     end
 
-    if self:GetState() == ArcCW.STATE_SIGHTS then
-        offset = self:GetBuff_Override("Override_BarrelOffsetSighted") or self.BarrelOffsetSighted or offset
+    if self:GetNWState() == ArcCW.STATE_SIGHTS then
+        offset = LerpVector(self:GetNWSightDelta(), offset, self:GetBuff_Override("Override_BarrelOffsetSighted", self.BarrelOffsetSighted) or offset)
+    else
+        offset = LerpVector(1 - self:GetNWSightDelta(), offset, self:GetBuff_Override("Override_BarrelOffsetHip", self.BarrelOffsetHip) or offset)
     end
 
     local src = owner:EyePos()
@@ -688,7 +689,7 @@ end
 
 function SWEP:GetDispersion()
     local owner = self:GetOwner()
-    local delta = self:GetSightDelta()
+    local delta = self:GetNWSightDelta()
 
     if vrmod and vrmod.IsPlayerInVR(owner) then return 0 end
 

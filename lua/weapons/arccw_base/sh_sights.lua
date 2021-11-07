@@ -38,7 +38,7 @@ end
 function SWEP:ExitSprint()
     if self:GetState() == ArcCW.STATE_IDLE then return end
 
-    local delta = self:GetSprintDelta()
+    local delta = self:GetNWSprintDelta()
     local ct = CurTime()
 
     self:SetState(ArcCW.STATE_IDLE)
@@ -410,6 +410,8 @@ end
 
 function SWEP:TranslateFOV(fov)
     local irons = self:GetActiveSights()
+
+    if CLIENT and GetConVar("arccw_dev_benchgun"):GetBool() then self.CurrentFOV = fov self.CurrentViewModelFOV = fov return fov end
     --if !irons then return end
     --if !irons.Magnification then return fov end
     --if irons.Magnification == 1 then return fov end
@@ -422,10 +424,13 @@ function SWEP:TranslateFOV(fov)
 
     if self:GetState() == ArcCW.STATE_SIGHTS then
         local sgreloading = (self:GetShotgunReloading() == 2 or self:GetShotgunReloading() == 4)
-        fov = 75
+        local delta = self:GetSightDelta()
+        delta = math.pow(delta, 2)
+        if CLIENT then fov = math.Clamp(( (75*(1-delta)) + (GetConVar("fov_desired"):GetInt()*delta) ), 75, 100) end
         app_vm = irons.ViewModelFOV or 45
         div = irons.Magnification * ((sgreloading or self:GetReloadingREAL() - self.ReloadInSights_CloseIn > CurTime()) and self.ReloadInSights_FOVMult or 1)
         div = math.max(div, 1)
+        div = (1 * (1-delta)) + div*delta
     end
 
     -- something about this doesn't work in multiplayer
@@ -438,10 +443,13 @@ function SWEP:TranslateFOV(fov)
 
     self.CurrentViewModelFOV = self.CurrentViewModelFOV or self.ViewModelFOV
     self.CurrentViewModelFOV = math.Approach(self.CurrentViewModelFOV, app_vm, FrameTime() * (self.CurrentViewModelFOV - app_vm))
-    if CLIENT and self:GetState() != ArcCW.STATE_SIGHTS and math.abs(GetConVar("fov_desired"):GetFloat() - self.CurrentFOV) > 0.0001 then
+
+    -- DOES A WEIRD SNAPPY THING WHEN YOU ENTER IRONSIGHTS
+    -- DOES A WEIRD SNAPPY THING WHEN YOU ENTER IRONSIGHTS
+    --[[if CLIENT and self:GetState() != ArcCW.STATE_SIGHTS and math.abs(GetConVar("fov_desired"):GetFloat() - self.CurrentFOV) > 0.0001 then
         -- This mainly exists to handle suitzoom, as you can now hold USE to use it
         self.CurrentViewModelFOV = app_vm * (self.CurrentFOV / GetConVar("fov_desired"):GetFloat())
-    end
+    end]]
     return self.CurrentFOV
 
     -- return 90

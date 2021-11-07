@@ -43,7 +43,7 @@ ArcCW.AutoStats = {
     ["Mult_SightedMoveSpeed"] = { "autostat.sightspeed",  "mult", false },
     ["Mult_ShootSpeedMult"]   = { "autostat.shootspeed",  "mult", false },
     ["Mult_ReloadTime"]       = { "autostat.reloadtime",  "mult", true },
-    ["Add_BarrelLength"]      = { "autostat.barrellength","add",  false },
+    ["Add_BarrelLength"]      = { "autostat.barrellength","add",  true },
     ["Mult_DrawTime"]         = { "autostat.drawtime",    "mult", true },
     ["Mult_SightTime"]        = { "autostat.sighttime",   "mult", true },
     ["Mult_CycleTime"]        = { "autostat.cycletime",   "mult", true },
@@ -97,13 +97,13 @@ local function stattext(wep, att, i, k, dmgboth)
     local simple = GetConVar("arccw_attinv_simpleproscons"):GetBool()
 
     local txt = ""
-    local str, st = ArcCW.GetTranslation(stat[1]) or stat[1], stat[3]
+    local str, eval = ArcCW.GetTranslation(stat[1]) or stat[1], stat[3]
 
     if i == "Mult_Damage" and dmgboth then
         str = ArcCW.GetTranslation("autostat.damageboth") or stat[1]
     end
 
-    local tcon, tpro = st and "cons" or "pros", st and "pros" or "cons"
+    local tcon, tpro = eval and "cons" or "pros", eval and "pros" or "cons"
 
     if stat[2] == "mult" and k != 1 then
         local sign, percent = k > 1 and "+" or "-", k > 1 and (k - 1) or (1 - k)
@@ -112,7 +112,7 @@ local function stattext(wep, att, i, k, dmgboth)
     elseif stat[2] == "add" and k != 0 then
         local sign, state = k > 0 and "+" or "-", k > 0 and k or -k
         txt = simple and "+ " or sign .. tostr(state) .. " "
-        return txt .. str, k > 1 and tpro or tcon
+        return txt .. str, k > 0 and tcon or tpro
     elseif stat[2] == "override" and k == true then
         return str, tcon
     elseif stat[2] == "func" then
@@ -149,23 +149,38 @@ function ArcCW:GetProsCons(wep, att, toggle)
 
     -- Process togglable stats
     if att.ToggleStats then
-        local toggletbl = att.ToggleStats[toggle or 1]
-        if toggletbl and !toggletbl.NoAutoStats then
+        --local toggletbl = att.ToggleStats[toggle or 1]
+        for ti, toggletbl in pairs(att.ToggleStats) do
+            -- show the first stat block (unless NoAutoStats), and all blocks with AutoStats
+            if toggletbl.AutoStats or (ti == (toggle or 1) and !toggletbl.NoAutoStats) then
+                local dmgboth = toggletbl.Mult_DamageMin and toggletbl.Mult_Damage and toggletbl.Mult_DamageMin == toggletbl.Mult_Damage
+                for i, stat in pairs(ArcCW.AutoStats) do
+                    if !toggletbl[i] or toggletbl[i .. "_SkipAS"] then continue end
+                    local val = toggletbl[i]
+                    --[[]
+                    -- makes the stat show as a sum and not an additional modifier
+                    -- feels more confusing though
+                    if att[i] then
+                        if stat[2] == "add" then
+                            val = val + att[i]
+                        elseif stat[2] == "mult" then
+                            val = val * att[i]
+                        end
+                    end
+                    ]]
 
-            local dmgboth = toggletbl.Mult_DamageMin and toggletbl.Mult_Damage and toggletbl.Mult_DamageMin == toggletbl.Mult_Damage
-            for i, k in pairs(toggletbl) do
-                local txt, typ = stattext(wep, toggletbl, i, k, dmgboth)
-                if !txt then continue end
+                    local txt, typ = stattext(wep, toggletbl, i, val, dmgboth)
+                    if !txt then continue end
 
-                local stat = ArcCW.AutoStats[i]
-                local prefix = (stat[2] == "override" and k == true) and "" or ("[" .. (toggletbl.AutoStatName or toggletbl.PrintName or i) .. "] ")
+                    local prefix = (stat[2] == "override" and k == true) and "" or ("[" .. (toggletbl.AutoStatName or toggletbl.PrintName or ti) .. "] ")
 
-                if typ == "pros" then
-                    tbl_ins(pros, prefix .. txt)
-                elseif typ == "cons" then
-                    tbl_ins(cons, prefix .. txt)
-                elseif typ == "infos" then
-                    tbl_ins(infos, prefix .. txt)
+                    if typ == "pros" then
+                        tbl_ins(pros, prefix .. txt)
+                    elseif typ == "cons" then
+                        tbl_ins(cons, prefix .. txt)
+                    elseif typ == "infos" then
+                        tbl_ins(infos, prefix .. txt)
+                    end
                 end
             end
         end

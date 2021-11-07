@@ -19,8 +19,8 @@ function ArcCW.Move(ply, mv, cmd)
 
     local blocksprint = false
 
-    if wpn:GetState() == ArcCW.STATE_SIGHTS or
-        wpn:GetState() == ArcCW.STATE_CUSTOMIZE then
+    if wpn:GetNWState() == ArcCW.STATE_SIGHTS or
+        wpn:GetNWState() == ArcCW.STATE_CUSTOMIZE then
         blocksprint = true
         s = s * math.Clamp(wpn:GetBuff("SightedSpeedMult") * wpn:GetBuff_Mult("Mult_SightedMoveSpeed"), 0, 1)
     elseif shottime > 0 then
@@ -53,9 +53,7 @@ function ArcCW.Move(ply, mv, cmd)
 
     mv:SetMaxSpeed(basespd * s)
     mv:SetMaxClientSpeed(basespd * s)
-
-    wpn.StrafeSpeed = math.Clamp(mv:GetSideSpeed(), -1, 1)
-
+    ply.ArcCW_LastTickSpeedMult = s -- in case other addons need it
 end
 
 hook.Add("SetupMove", "ArcCW_SetupMove", ArcCW.Move)
@@ -201,14 +199,3 @@ function ArcCW.StartCommand(ply, ucmd)
 end
 
 hook.Add("StartCommand", "ArcCW_StartCommand", ArcCW.StartCommand)
-
-function ArcCW.StrafeTilt(wep)
-    if GetConVar("arccw_strafetilt"):GetBool() then
-        local tilt = wep.StrafeSpeed or 0
-        if wep:GetState() == ArcCW.STATE_SIGHTS and wep:GetActiveSights().Holosight then
-            tilt = tilt * (wep:GetBuff("MoveDispersion") / 360 / 60) * 2
-        end
-        return tilt
-    end
-    return 0
-end

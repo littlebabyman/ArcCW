@@ -104,6 +104,11 @@ SWEP.ReducedClipSize = 10
 SWEP.ForceDefaultClip = nil
 SWEP.ForceDefaultAmmo = nil
 
+-- The amount of rounds to load in the chamber when the gun is non-empty or empty
+-- Defaults to ChamberSize and 0. Don't change unless you have a good reason
+SWEP.ChamberLoadNonEmpty = nil
+SWEP.ChamberLoadEmpty = nil
+
 SWEP.AmmoPerShot = 1
 SWEP.InfiniteAmmo = false -- weapon can reload for free
 SWEP.BottomlessClip = false -- weapon never has to reload
@@ -277,7 +282,7 @@ SWEP.IronSightStruct = {
     Pos = Vector(-8.728, -13.702, 4.014),
     Ang = Angle(-1.397, -0.341, -2.602),
     Midpoint = { -- Where the gun should be at the middle of it's irons
-        Pos = Vector(0, 30, -5),
+        Pos = Vector(0, 15, -4),
         Ang = Angle(0, 0, -45),
     },
     Magnification = 1,
@@ -312,6 +317,7 @@ SWEP.HeatDissipation = 2 -- rounds' worth of heat lost per second
 SWEP.HeatLockout = false -- overheating means you cannot fire until heat has been fully depleted
 SWEP.HeatDelayTime = 0.5
 SWEP.HeatFix = false -- when the "fix" animation is played, all heat is restored.
+SWEP.HeatOverflow = nil -- if true, heat is allowed to exceed capacity (this only applies when the default overheat handling is overridden)
 
 -- If Malfunction is enabled, the gun has a random chance to be jammed
 -- after the gun is jammed, it won't fire unless reload is pressed, which plays the "unjam" animation
@@ -640,6 +646,7 @@ SWEP.Animations = {
     --     ProcHolster = false, -- procedural holster weapon, THEN play animation
     --     LastClip1OutTime = 0, -- when should the belt visually replenish on a belt fed
     --     MinProgress = 0, -- how much time in seconds must pass before the animation can be cancelled
+    --     ForceEmpty = false, -- Used by empty shotgun reloads that load rounds to force consider the weapon to still be empty.
     -- }
 }
 
@@ -747,8 +754,8 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Float", 4, "NextPrimaryFireSlowdown")
     self:NetworkVar("Float", 5, "NextIdle")
     self:NetworkVar("Float", 6, "Holster_Time")
-    self:NetworkVar("Float", 7, "SightDelta")
-    self:NetworkVar("Float", 8, "SprintDelta")
+    self:NetworkVar("Float", 7, "NWSightDelta")
+    self:NetworkVar("Float", 8, "NWSprintDelta")
 
     self:NetworkVar("Vector", 0, "BipodPos")
 
@@ -870,4 +877,26 @@ function SWEP:BarrelHitWall()
     else
         return 0
     end
+end
+
+SWEP.CL_SightDelta = 0
+function SWEP:SetSightDelta(d)
+    if !game.SinglePlayer() and CLIENT then self.CL_SightDelta = d end
+    self:SetNWSightDelta(d)
+end
+
+function SWEP:GetSightDelta()
+    if !game.SinglePlayer() and CLIENT then return self.CL_SightDelta end
+    return self:GetNWSightDelta()
+end
+
+SWEP.CL_SprintDelta = 0
+function SWEP:SetSprintDelta(d)
+    if !game.SinglePlayer() and CLIENT then self.CL_SprintDelta = d end
+    self:SetNWSprintDelta(d)
+end
+
+function SWEP:GetSprintDelta()
+    if !game.SinglePlayer() and CLIENT then return self.CL_SprintDelta end
+    return self:GetNWSprintDelta()
 end

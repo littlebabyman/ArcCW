@@ -28,6 +28,7 @@ CreateConVar("arccw_mult_npcdamage", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Multi
 CreateConVar("arccw_mult_hipfire", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Multiplier for hip fire spread for ArcCW.")
 CreateConVar("arccw_mult_reloadtime", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Multiplier for how long ArcCW weapons take to reload.", 0.01)
 CreateConVar("arccw_mult_sighttime", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Multiplier for how long ArcCW weapons take to enter sights.", 0.1)
+CreateConVar("arccw_mult_rpm", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Multiplier for how fast ArcCW weapons fire. May be disastrous on performance.", 0.01)
 CreateConVar("arccw_mult_range", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Multiplier for range of all ArcCW weapons.")
 CreateConVar("arccw_mult_recoil", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Multiplier for recoil of all ArcCW weapons.")
 CreateConVar("arccw_mult_accuracy", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Multiplier for mechanical inprecision of ArcCW weapons.")
@@ -86,8 +87,6 @@ CreateConVar("arccw_weakensounds", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Reduce 
 
 CreateConVar("arccw_desync", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Turning this on prevents cheaters from predicting the bullet direction/spread, making the nospread cheat useless.")
 
-CreateConVar("arccw_strafetilt", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "If enabled, the point of fire will tilt when strafing and aiming.", 0, 1)
-
 CreateConVar("arccw_aimassist", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable A I M B O T", 0, 1)
 CreateConVar("arccw_aimassist_head", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "My advice for you: aim for the head!", 0, 1)
 CreateConVar("arccw_aimassist_cone", 5, FCVAR_ARCHIVE + FCVAR_REPLICATED, "The angle of the cone within which targets can be seeked.", 1, 360)
@@ -96,10 +95,15 @@ CreateConVar("arccw_aimassist_intensity", 0.5, FCVAR_ARCHIVE + FCVAR_REPLICATED,
 
 CreateConVar("arccw_malfunction", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "", 0, 2)
 
+CreateConVar("arccw_attinv_giveonspawn", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Give this many random attachments to players on spawn.", 0)
+
+CreateConVar("arccw_reloadincust", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Allow players to reload when customizing.", 0, 1)
+
+
 -- developer stuff
 CreateConVar("arccw_reloadatts_mapcleanup", 0, 0, "Whether to reload ArcCW attachments on admin clean up.")
 CreateConVar("arccw_reloadatts_registerentities", 1, 0, "Register attachment entities. This may increase time to reload attachments.")
 CreateConVar("arccw_reloadatts_showignored", 0, 0, "Whether to include attachments set to Ignore.")
 CreateConVar("arccw_dev_debug", 0, 0, "Developer debug HUD showing cool time shit.", 0, 1)
 CreateConVar("arccw_dev_shootinfo", 0, 0, "Show debug overlay firing information. Only works when developer is set to 1.", 0, 3)
-CreateConVar("arccw_dev_cust2beta", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Use the new beta customize hud.", 0, 1)
+--CreateConVar("arccw_dev_cust2beta", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Use the new beta customize hud.", 0, 1)

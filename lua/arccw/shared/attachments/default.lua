@@ -20,6 +20,7 @@ att.Hidden = false
 att.HideIfBlocked = false -- if the attachment cannot be attached due to flag reasons, do not show up
 att.HideIfUnavailable = false -- if the attachment is not owned, do not show up even if "Hide Unowned Attachments" is off
 att.NoRandom = false -- will not be randomly rolled
+att.RandomWeight = 1 -- random rolling weight, defaults to 1
 
 att.NotForNPCs = false
 
@@ -30,6 +31,7 @@ att.ToggleStats = {
     -- {
     --     PrintName = "Red",
     --     AutoStatName = "On",
+    --     NoAutoStat = false,
     --     Laser = true,
     --     LaserColor = Color(255, 0, 0),
     --     Mult_HipDispersion = 0.75,
@@ -45,7 +47,7 @@ att.ToggleStats = {
     -- },
     -- {
     --     PrintName = "Blue",
-    --     NoAutoStats = true,
+    --     AutoStats = true,
     --     Laser = true,
     --     LaserColor = Color(0, 0, 255),
     --     Mult_HipDispersion = 0.75,
@@ -502,6 +504,7 @@ att.Hook_Overheat = function(wep, heat) end
 att.Hook_PostOverheat = function(wep) end
 -- Return true to not do animation/heat locking
 att.Hook_OnOverheat = function(wep) end
+att.HeatOverflow = nil
 
 -- malfunction related buffs
 att.Override_Malfunction = nil
@@ -605,3 +608,4 @@ att.Mult_CycleTime = 1
 
 att.AttachSound = nil
 att.DetachSound = nil
+att.ToggleSound = nil

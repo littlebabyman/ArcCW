@@ -39,8 +39,8 @@ function SWEP:Deploy()
 
     self:SetBurstCount(0)
 
-    self:CallOnClient("FuckingKillMe")
-    self:FuckingKillMe()
+    self:WepSwitchCleanup()
+    if game.SinglePlayer() then self:CallOnClient("WepSwitchCleanup") end
     -- Don't play anim if in vehicle. This can be caused by HL2 level changes
 
     if !self:GetOwner():InVehicle() then
@@ -111,8 +111,8 @@ function SWEP:InitialDefaultClip()
     if engine.ActiveGamemode() == "darkrp" then return end -- DarkRP is god's second biggest mistake after gmod
 
     if self:GetOwner() and self:GetOwner():IsPlayer() then
-        if self:HasBottomlessClip() and self:Clip1() > 0 then
-            self:SetClip1(0)
+        if self:HasBottomlessClip() then
+            self:SetClip1(1)
         end
         if self.ForceDefaultAmmo then
             self:GetOwner():GiveAmmo(self.ForceDefaultAmmo, self.Primary.Ammo)
@@ -223,8 +223,8 @@ function SWEP:Holster(wep)
         return
     end
 
-    self:CallOnClient("FuckingKillMe")
-    self:FuckingKillMe()
+    self:WepSwitchCleanup()
+    if game.SinglePlayer() then self:CallOnClient("WepSwitchCleanup") end
 
     if wep == self then self:Deploy() return false end
     if self:GetHolster_Time() > CurTime() then return false end
@@ -318,7 +318,7 @@ function SWEP:ProceduralHolster()
     self.ProcHolsterTime = CurTime()
 end
 
-function SWEP:FuckingKillMe()
+function SWEP:WepSwitchCleanup()
     table.Empty(self.EventTable)
     self.InProcDraw = false
     self.InProcHolster = false

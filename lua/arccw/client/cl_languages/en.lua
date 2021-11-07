@@ -342,3 +342,28 @@ L["arccw.cvar.enable_sway"] = "Enable Sway"
 L["arccw.cvar.enable_sway.desc"] = "Most weapons do not specify a sway value. If you wish to give sway to all weapons, use the 'Add Sway' slider."
 L["arccw.cvar.add_sway"] = "Add Sway"
 L["arccw.cvar.mult_sway"]    = "Multiply Sway"
+
+-- 2021-08-15
+L["arccw.cvar.mult_rpm"] = "Fire Rate"
+L["arccw.cvar.mult_rpm.desc"] = "May be disastrous on performance. May also be a ton of fun."
+
+-- 2021-08-16
+L["arccw.cvar.dev_benchgun"] = "Benchgun"
+L["arccw.cvar.dev_benchgun.desc"] = "Places the viewmodel in a stationary position, usually at world origin."
+L["arccw.cvar.dev_benchgun_custom"] = "Benchgun Custom"
+L["arccw.cvar.dev_benchgun_custom.desc"] = "Custom location to place the viewmodel at. Use getpos and place the result here.\nExample:\nsetpos 61 -397 -63;setang 0 96 0"
+
+-- 2021-08-18
+L["arccw.cvar.crosshair_prong_top"] = "Show Top Prong"
+L["arccw.cvar.crosshair_prong_left"] = "Show Left Prong"
+L["arccw.cvar.crosshair_prong_right"] = "Show Right Prong"
+L["arccw.cvar.crosshair_prong_bottom"] = "Show Bottom Prong"
+L["arccw.cvar.crosshair_tilt"] = "Tilted Crosshair"
+L["arccw.cvar.attinv_giveonspawn"] = "Give Atts. On Spawn"
+
+-- 2021-10-10
+L["arccw.cvar.hud_fcgabbrev"] = "Abbreviate Firemode Names"
+
+-- 2021-10-31
+L["arccw.cvar.reloadincust"] = "Reloading In Customize Menu"
+L["arccw.cvar.reloadincust.desc"] = "May allow players to cheese reload times by swapping magazine attachments.\nWill also disable left hand lowering in the customize menu."

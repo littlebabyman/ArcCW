@@ -1,4 +1,5 @@
 L = {}
+STL = {}
 
 -- not a translate string, but in case a language needs its own font
 L["default_font"] = "Bahnschrift"
@@ -318,11 +319,41 @@ L["fcg.pump"] = "Pump-action"
 L["fcg.lever"] = "Lever-action"
 L["fcg.manual"] = "Manual-action"
 L["fcg.break"] = "Break-action"
---L["fcg.sngl"] = "Single" should we? idk
---L["fcg.both"] = "Both"
+L["fcg.sngl"] = "Single"
+L["fcg.both"] = "Both"
 
 --2021-08-11
 L["autostat.clipsize.mod"] = "Magazine capacity" -- used for Add_ClipSize and Mult_ClipSize
+
+--2021-08-22
+L["trivia.recoilscore"] = "Recoil Score (Lower is better)"
+L["fcg.safe.abbrev"] = "SAFE"
+L["fcg.semi.abbrev"] = "SEMI"
+L["fcg.auto.abbrev"] = "AUTO"
+L["fcg.burst.abbrev"] = "%d-BST"
+L["fcg.ubgl.abbrev"] = "UBGL"
+L["fcg.safe2.abbrev"] = "LOW"
+L["fcg.dact.abbrev"] = "DACT"
+L["fcg.sact.abbrev"] = "SACT"
+L["fcg.bolt.abbrev"] = "BOLT"
+L["fcg.pump.abbrev"] = "PUMP"
+L["fcg.lever.abbrev"] = "LEVER"
+L["fcg.manual.abbrev"] = "MANUAL"
+L["fcg.break.abbrev"] = "BREAK"
+L["fcg.sngl.abbrev"] = "SNGL"
+L["fcg.both.abbrev"] = "BOTH"
+
+-- 2021-10-10
+STL["lowered"] = "fcg.safe2"
+STL["double-action"] = "fcg.dact"
+STL["single-action"] = "fcg.sact"
+STL["bolt-action"] = "fcg.bolt"
+STL["pump-action"] = "fcg.pump"
+STL["lever-action"] = "fcg.lever"
+STL["manual-action"] = "fcg.manual"
+STL["break-action"] = "fcg.break"
+--STL["single"] = "fcg.sngl"
+--STL["both"] = "fcg.both"
 
 --[[]
 You can translate the trivia of any arbitrary weapon or attachment by adding the phrase ["desc.class_name"]
